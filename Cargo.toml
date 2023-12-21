@@ -42,3 +42,8 @@ required-features = ["embassy"]
 [[example]]
 name = "embassy_keyboard_to_esp_now"
 required-features = ["embassy", "wifi"]
+
+[[example]]
+name = "embassy_receiver_from_esp_now"
+required-features = ["embassy", "wifi"]
+
