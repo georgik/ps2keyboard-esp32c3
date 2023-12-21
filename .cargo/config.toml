@@ -4,6 +4,8 @@ runner = "espflash flash --monitor"
 [build]
 rustflags = [
   "-C", "link-arg=-Tlinkall.x",
+  "-C", "link-arg=-Trom_functions.x",
+  "-C", "force-frame-pointers",
 ]
 target = "riscv32imc-unknown-none-elf"
 
