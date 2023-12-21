@@ -19,7 +19,6 @@ use esp_wifi::{initialize, EspWifiInitFor};
 async fn esp_now_receiver() {
     let peripherals = unsafe { Peripherals::steal() };
     let system = peripherals.SYSTEM.split();
-    // Initialize the embassy
     let timer = hal::systimer::SystemTimer::new(peripherals.SYSTIMER).alarm0;
     let rng = Rng::new(peripherals.RNG);
     let radio_clock_control = system.radio_clock_control;
@@ -33,34 +32,48 @@ async fn esp_now_receiver() {
         rng,
         radio_clock_control,
         &clocks,
-    )
-    .unwrap();
+    );
 
-    let mut esp_now = EspNow::new(&init, wifi).unwrap();
+    match init {
+        Ok(init) => {
+            let mut esp_now = EspNow::new(&init, wifi);
+            match esp_now {
+                Ok(mut esp_now) => {
+                    let peer_info = PeerInfo {
+                        // Specify a unique peer address here (replace with actual address)
+                        peer_address: [0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF],
+                        lmk: None,
+                        channel: Some(1), // Specify the channel if known
+                        encrypt: false, // Set to true if encryption is needed
+                    };
 
-    // Add BROADCAST_ADDRESS as peer if needed
-    let peer_info = PeerInfo {
-        peer_address: BROADCAST_ADDRESS,
-        lmk: None,
-        channel: None,
-        encrypt: false,
-    };
-    // info!("Adding peer");
-    // match esp_now.add_peer(peer_info) {
-    //     Ok(_) => info!("Peer added"),
-    //     Err(e) => error!("Peer add error: {:?}", e),
-    // }
+                    // Check if the peer already exists
+                    if !esp_now.peer_exists(&peer_info.peer_address) {
+                        info!("Adding peer");
+                        match esp_now.add_peer(peer_info) {
+                            Ok(_) => info!("Peer added"),
+                            Err(e) => error!("Peer add error: {:?}", e),
+                        }
+                    } else {
+                        info!("Peer already exists, not adding");
+                    }
 
-    loop {
-        let received_data = esp_now.receive();
-        match received_data {
-            Some(data) => {
-                info!("Data received over ESP-NOW: {:?}", data);
-            }
-            _ => {
-                error!("ESP-NOW receive error");
+                    loop {
+                        let received_data = esp_now.receive();
+                        match received_data {
+                            Some(data) => {
+                                info!("Data received over ESP-NOW: {:?}", data);
+                            }
+                            None => {
+                                //error!("ESP-NOW receive error");
+                            }
+                        }
+                    }
+                }
+                Err(e) => error!("ESP-NOW initialization error: {:?}", e),
             }
         }
+        Err(e) => error!("WiFi initialization error: {:?}", e),
     }
 }
 
