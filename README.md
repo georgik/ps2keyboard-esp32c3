@@ -83,3 +83,10 @@ Note: CPU must be clocked at 160MHz to decode values properly,
 the frequency 80 MHz is not sufficient.
 
 Run: `cargo run --release --example embassy_keyboard_to_serial --features embassy`
+
+
+### Keyboard to ESP-NOW converter
+
+Transport codes using ESP-NOW technology using WiFi without Access Point.
+
+Run: `cargo run --release --example embassy_keyboard_to_esp_now --features embassy`

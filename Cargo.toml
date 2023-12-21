@@ -11,7 +11,7 @@ hal = { package = "esp32c3-hal", version = "0.14.0", optional = true }
 esp-println = { version = "0.7.1", features = ["esp32c3", "uart", "log"] }
 esp-backtrace = { version = "0.9.0", features = ["esp32c3", "print-uart", "panic-handler"] }
 pc-keyboard = "0.7.0"
-critical-section = "1.1.1"
+#critical-section = "1.1.2"
 log = "0.4.14"
 
 # Async dependencies
@@ -21,10 +21,15 @@ embassy-futures = { version = "0.1.0", optional = true }
 embassy-executor = { version = "0.4.0", package = "embassy-executor", features = ["nightly", "integrated-timers"], optional = true }
 embassy-time = { version = "0.2.0", optional = true }
 
+# WiFi dependencies
+esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "a69545d", optional = true, features = [ "esp32c3", "esp-now", "async" ] }
+
 # Features
 [features]
-default = [ "hal" ]
+#default = [ "hal" ]
+default = [ "hal", "embassy", "wifi"]
 embassy = [ "hal/embassy", "hal/async", "hal/embassy-time-timg0", "hal/rt", "hal/embassy-executor-thread", "embedded-hal-async", "embassy-sync", "embassy-futures", "embassy-executor", "embassy-time" ]
+wifi = [ "esp-wifi" ]
 
 # Examples configuration
 [[example]]
@@ -33,3 +38,7 @@ name = "keyboard_to_serial"
 [[example]]
 name = "embassy_keyboard_to_serial"
 required-features = ["embassy"]
+
+[[example]]
+name = "embassy_keyboard_to_esp_now"
+required-features = ["embassy", "wifi"]
