@@ -62,7 +62,8 @@ async fn esp_now_receiver() {
                         let received_data = esp_now.receive();
                         match received_data {
                             Some(data) => {
-                                info!("Data received over ESP-NOW: {:?}", data);
+                                let bytes = data.data;
+                                info!("Key code received over ESP-NOW: {:?}", bytes[0]);
                             }
                             None => {
                                 //error!("ESP-NOW receive error");
