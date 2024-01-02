@@ -2,6 +2,10 @@
 #![no_main]
 #![feature(type_alias_impl_trait)]
 
+// Example of received data from ESP-IDF, significant is the last byte
+// [170, 1, 51, 74, 1, 72, 0, 0, 255, 255, 255, 255, 255, 255, 244, 18, 250, 129, 77, 16, 8]
+// index: 20
+
 use embassy_executor::Spawner;
 use embassy_time::Duration;
 use esp_backtrace as _;
