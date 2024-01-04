@@ -2,9 +2,6 @@
 #![no_main]
 #![feature(type_alias_impl_trait)]
 
-// Example of received data from ESP-IDF, significant is the last byte
-// [170, 1, 51, 74, 1, 72, 0, 0, 255, 255, 255, 255, 255, 255, 244, 18, 250, 129, 77, 16, 8]
-// index: 20
 
 use embassy_executor::Spawner;
 use embassy_time::Duration;
@@ -18,6 +15,12 @@ use hal::{clock::{
         };
 use log::{info, error};
 use esp_wifi::{initialize, EspWifiInitFor};
+
+// ESP-IDF examples are sending some data over ESP-NOW, the last byte is the key code
+// Example of received data from ESP-IDF, significant is the last byte
+// [170, 1, 51, 74, 1, 72, 0, 0, 255, 255, 255, 255, 255, 255, 244, 18, 250, 129, 77, 16, 8]
+// Payload: index = 20, value = 8
+const ESP_NOW_PAYLOAD_INDEX: usize = 20;
 
 #[embassy_executor::task]
 async fn esp_now_receiver() {
@@ -67,7 +70,7 @@ async fn esp_now_receiver() {
                         match received_data {
                             Some(data) => {
                                 let bytes = data.data;
-                                info!("Key code received over ESP-NOW: {:?}", bytes[0]);
+                                info!("Key code received over ESP-NOW: {:?}", bytes[ESP_NOW_PAYLOAD_INDEX]);
                             }
                             None => {
                                 //error!("ESP-NOW receive error");
